@@ -19,7 +19,6 @@ test('create an answer', async () => {
   })
 
   expect(answer).toMatchObject({
-    id: expect.any(String),
     content: 'answer',
   })
 })
