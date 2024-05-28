@@ -7,7 +7,7 @@ interface AnswerProps {
   authorId: UniqueEntityID
   questionId: UniqueEntityID
   content: string
-  createdAt: Date
+  createdAt?: Date
   updatedAt?: Date
 }
 
