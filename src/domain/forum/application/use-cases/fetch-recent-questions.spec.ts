@@ -18,7 +18,7 @@ describe('Fetch Recent Questions', () => {
       createdAt: moment.utc().toDate()
     })
     const secondQuestion = makeQuestion({
-      createdAt: moment.utc().add(1).toDate()
+      createdAt: moment.utc().add(10).toDate()
     })
 
     await inMemoryQuestionsRepository.create(firstQuestion)
@@ -40,11 +40,11 @@ describe('Fetch Recent Questions', () => {
       createdAt: moment.utc().toDate()
     })
     const secondQuestion = makeQuestion({
-      createdAt: moment.utc().add(1).toDate()
+      createdAt: moment.utc().add(10).toDate()
     })
 
     const thirtyQuestion = makeQuestion({
-      createdAt: moment.utc().add(2).toDate()
+      createdAt: moment.utc().add(20).toDate()
     })
 
     await inMemoryQuestionsRepository.create(firstQuestion)

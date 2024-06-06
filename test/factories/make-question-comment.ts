@@ -3,7 +3,7 @@ import { QuestionComment, QuestionCommentProps } from "@/domain/forum/enterprise
 import { faker } from '@faker-js/faker'
 
 export function makeQuestionComment(override: Partial<QuestionCommentProps> = {}, id?: UniqueEntityID) {
-  const questioncomment = QuestionComment.create(
+  const questionComment = QuestionComment.create(
     {
       authorId: new UniqueEntityID(),
       questionId: new UniqueEntityID(),
@@ -13,5 +13,5 @@ export function makeQuestionComment(override: Partial<QuestionCommentProps> = {}
     id
   )
 
-  return questioncomment
+  return questionComment
 }

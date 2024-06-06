@@ -55,11 +55,11 @@ describe('Fetch Recent Answers', () => {
     })
     const secondAnswer = makeAnswer({
       questionId: question.id,
-      createdAt: moment.utc().add(1).toDate()
+      createdAt: moment.utc().add(10).toDate()
     })
     const thirtyAnswer = makeAnswer({
       questionId: question.id,
-      createdAt: moment.utc().add(2).toDate()
+      createdAt: moment.utc().add(20).toDate()
     })
 
     await inMemoryAnswersRepository.create(firstAnswer)

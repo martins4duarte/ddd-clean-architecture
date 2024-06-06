@@ -3,18 +3,34 @@ import { QuestionCommentsRepository } from "@/domain/forum/application/repositor
 import { QuestionComment } from "@/domain/forum/enterprise/entities/question-comment";
 
 export class InMemoryQuestionCommentsRepository implements QuestionCommentsRepository {
+ 
 
   public items: QuestionComment[] = []
 
   async findById(id: string) {
-    const questioncomment = this.items.find(item => item.id.toString() === id)
+    const questionComment = this.items.find(item => item.id.toString() === id)
 
-    if (!questioncomment) {
+    if (!questionComment) {
       return null
     }
 
-    return questioncomment
+    return questionComment
 
+  }
+
+  async findManyByQuestionId(questionId: string, { page, limit }: PaginationParams) {
+    const OFFSET = (page - 1) * page;
+    const LIMIT = page * (limit ?? 20);
+
+    const answers = this.items.filter(answer =>
+      answer.questionId.toString() === questionId
+    )
+      .sort((a, b) => {
+        return b.createdAt.getTime() - a.createdAt.getTime()
+      })
+      .slice(OFFSET, LIMIT)
+
+    return answers
   }
 
   // async findManyRecent({ page, limit }: PaginationParams): Promise<QuestionComment[]> {
@@ -39,14 +55,14 @@ export class InMemoryQuestionCommentsRepository implements QuestionCommentsRepos
   //   this.items[questioncommentIndex] = questioncomment
   // }
 
-  // async delete(questioncomment: QuestionComment) {
-  //   const questioncommentExists = this.items.findIndex(item => item.id === questioncomment.id)
+  async delete(questionComment: QuestionComment) {
+    const questionCommentExists = this.items.findIndex(item => item.id === questionComment.id)
 
-  //   if (!questioncomment) {
-  //     throw new Error('QuestionComment not found')
-  //   }
+    if (!questionComment) {
+      throw new Error('QuestionComment not found')
+    }
 
-  //   this.items.splice(questioncommentExists, 1)
+    this.items.splice(questionCommentExists, 1)
 
-  // }
+  }
 }
