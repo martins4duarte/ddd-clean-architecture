@@ -1,15 +1,19 @@
 import { AnswerCommentsRepository } from "../repositories/answer-comments-repository"
 import { PaginationParams } from "@/core/repositories/pagination-params"
 import { AnswerComment } from "../../enterprise/entities/answer-comment"
+import { Either, success } from "@/core/either"
 
 
 interface FetchAnswerCommentsUseCaseRequest extends PaginationParams {
   answerId: string
 }
 
-interface FetchAnswerCommentsUseCaseResponse {
-  answerComments: AnswerComment[]
-}
+type FetchAnswerCommentsUseCaseResponse = Either<
+  null,
+  {
+    answerComments: AnswerComment[]
+  }
+>
 
 export class FetchAnswerCommentsUseCase {
 
@@ -30,8 +34,8 @@ export class FetchAnswerCommentsUseCase {
         limit
       })
 
-    return {
+    return success({
       answerComments,
-    }
+    })
   }
 }

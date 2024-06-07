@@ -2,15 +2,19 @@ import { QuestionCommentsRepository } from "../repositories/question-comments-re
 import { Answer } from "../../enterprise/entities/answer"
 import { PaginationParams } from "@/core/repositories/pagination-params"
 import { QuestionComment } from "../../enterprise/entities/question-comment"
+import { Either, success } from "@/core/either"
 
 
 interface FetchQuestionCommentsUseCaseRequest extends PaginationParams {
   questionId: string
 }
 
-interface FetchQuestionCommentsUseCaseResponse {
-  questionComments: QuestionComment[]
-}
+type FetchQuestionCommentsUseCaseResponse = Either<
+  null,
+  {
+    questionComments: QuestionComment[]
+  }
+>
 
 export class FetchQuestionCommentsUseCase {
 
@@ -31,8 +35,8 @@ export class FetchQuestionCommentsUseCase {
         limit
       })
 
-    return {
+    return success({
       questionComments,
-    }
+    })
   }
 }

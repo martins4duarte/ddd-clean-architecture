@@ -2,6 +2,9 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id"
 import { QuestionsRepository } from "../repositories/questions-repository"
 import { Question } from "../../enterprise/entities/question"
 import { AnswersRepository } from "../repositories/answers-repository"
+import { Either, failure, success } from "@/core/either"
+import { ResourceNotFoundError } from "./errors/resource-not-found-error"
+import { NotAllowedError } from "./errors/not-allowed"
 
 
 interface ChooseQuestionBestAnswerUseCaseRequest {
@@ -9,44 +12,47 @@ interface ChooseQuestionBestAnswerUseCaseRequest {
   answerId: string
 }
 
-interface ChooseQuestionBestAnswerUseCaseResponse {
-  question: Question
-}
+type ChooseQuestionBestAnswerUseCaseResponse = Either<
+  ResourceNotFoundError | NotAllowedError,
+  {
+    question: Question
+  }
+>
 
 export class ChooseQuestionBestAnswerUseCase {
 
   constructor(
     private questionsRepository: QuestionsRepository,
     private answersRepository: AnswersRepository
-  ) {}
+  ) { }
 
-  async execute({ 
-    answerId, 
-    authorId 
+  async execute({
+    answerId,
+    authorId
   }: ChooseQuestionBestAnswerUseCaseRequest): Promise<ChooseQuestionBestAnswerUseCaseResponse> {
 
     const answer = await this.answersRepository.findById(answerId)
 
-    if(!answer) {
-      throw new Error("Answer not found")
+    if (!answer) {
+      return failure(new ResourceNotFoundError("Answer not found"))
     }
 
     const question = await this.questionsRepository.findById(answer.questionId.toString())
 
-    if(!question) {
-      throw new Error("Question not found")
+    if (!question) {
+      return failure(new ResourceNotFoundError("Question not found"))
     }
 
     if (authorId !== question.authorId.toString()) {
-      throw new Error("You can't edit a answer that is not yours")
+      return failure(new NotAllowedError())
     }
 
     question.bestAnswerId = answer.id
 
     await this.questionsRepository.save(question)
 
-    return {
+    return success({
       question
-    }
+    })
   }
 }

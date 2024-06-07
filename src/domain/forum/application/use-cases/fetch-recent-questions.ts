@@ -1,13 +1,19 @@
 import { QuestionsRepository } from "../repositories/questions-repository"
 import { Question } from "../../enterprise/entities/question"
 import { PaginationParams } from "@/core/repositories/pagination-params"
+import { ResourceNotFoundError } from "./errors/resource-not-found-error"
+import { Either, failure, success } from "@/core/either"
 
 
 interface FetchRecentQuestionsUseCaseRequest extends PaginationParams { }
 
-interface FetchRecentQuestionsUseCaseResponse {
-  questions: Question[]
-}
+type FetchRecentQuestionsUseCaseResponse = Either<
+  ResourceNotFoundError,
+  {
+    questions: Question[]
+  }
+>
+ 
 
 export class FetchRecentQuestionsUseCase {
 
@@ -26,12 +32,11 @@ export class FetchRecentQuestionsUseCase {
     })
 
     if (!questions) {
-      throw new Error("Question not found")
+      return failure(new ResourceNotFoundError())
     }
 
-
-    return {
+    return success({
       questions,
-    }
+    })
   }
 }

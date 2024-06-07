@@ -1,6 +1,5 @@
 import { InMemoryQuestionCommentsRepository } from 'test/repositories/in-memory-question-comment-repository'
 import { makeQuestion } from 'test/factories/make-question'
-import moment from 'moment'
 import { FetchQuestionCommentsUseCase } from './fetch-question-comments'
 import { makeQuestionComment } from 'test/factories/make-question-comment'
 import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
@@ -32,13 +31,13 @@ describe('Fetch Recent QuestionComments', () => {
     await inMemoryQuestionCommentsRepository.create(firstQuestionComment)
     await inMemoryQuestionCommentsRepository.create(secondQuestionComment)
 
-    const { questionComments } = await sut.execute({
+    const result = await sut.execute({
       questionId: question.id.toString(),
       page: 1,
       limit: 2
     })
 
-    expect(questionComments).toEqual([
+    expect(result.value?.questionComments).toEqual([
       expect.objectContaining(firstQuestionComment),
       expect.objectContaining(secondQuestionComment)
     ])
@@ -51,39 +50,39 @@ describe('Fetch Recent QuestionComments', () => {
 
     const firstQuestionComment = makeQuestionComment({
       questionId: question.id,
-      createdAt: moment.utc().toDate()
+      createdAt: new Date(2024, 0, 1)
     })
     const secondQuestionComment = makeQuestionComment({
       questionId: question.id,
-      createdAt: moment.utc().add(10).toDate()
+      createdAt: new Date(2024, 0, 4)
     })
     const thirtyQuestionComment = makeQuestionComment({
       questionId: question.id,
-      createdAt: moment.utc().add(20).toDate()
+      createdAt: new Date(2024, 0, 8)
     })
 
     await inMemoryQuestionCommentsRepository.create(firstQuestionComment)
     await inMemoryQuestionCommentsRepository.create(secondQuestionComment)
     await inMemoryQuestionCommentsRepository.create(thirtyQuestionComment)
 
-    const { questionComments: firstPageQuestionComments } = await sut.execute({
+    const firstResult = await sut.execute({
       questionId: question.id.toString(),
       page: 1,
       limit: 2
     })
 
-    const { questionComments: secondPageQuestionComments } = await sut.execute({
+    const secondResult = await sut.execute({
       questionId: question.id.toString(),
       page: 2,
       limit: 2
     })
 
-    expect(firstPageQuestionComments).toEqual([
+    expect(firstResult.value?.questionComments).toEqual([
       expect.objectContaining(thirtyQuestionComment),
       expect.objectContaining(secondQuestionComment)
     ])
 
-    expect(secondPageQuestionComments).toEqual([
+    expect(secondResult.value?.questionComments).toEqual([
       expect.objectContaining(firstQuestionComment)
     ])
 

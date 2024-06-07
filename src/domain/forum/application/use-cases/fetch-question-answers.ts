@@ -1,15 +1,19 @@
 import { AnswersRepository } from "../repositories/answers-repository"
 import { Answer } from "../../enterprise/entities/answer"
 import { PaginationParams } from "@/core/repositories/pagination-params"
+import { Either, success } from "@/core/either"
 
 
 interface FetchQuestionAnswersUseCaseRequest extends PaginationParams {
   questionId: string
 }
 
-interface FetchQuestionAnswersUseCaseResponse {
-  answers: Answer[]
-}
+type FetchQuestionAnswersUseCaseResponse = Either<
+  null,
+  {
+    answers: Answer[]
+  }
+>
 
 export class FetchQuestionAnswersUseCase {
 
@@ -30,8 +34,8 @@ export class FetchQuestionAnswersUseCase {
         limit
       })
 
-    return {
+    return success({
       answers,
-    }
+    })
   }
 }

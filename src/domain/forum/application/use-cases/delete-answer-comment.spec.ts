@@ -3,6 +3,7 @@ import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 import { DeleteAnswerCommentUseCase } from './delete-answer-comment'
 import { InMemoryAnswerCommentsRepository } from 'test/repositories/in-memory-answers-comment-repository'
 import { makeAnswerComment } from 'test/factories/make-answer-comment'
+import { NotAllowedError } from './errors/not-allowed'
 
 let inMemoryanswerCommentsRepository: InMemoryAnswerCommentsRepository
 let sut: DeleteAnswerCommentUseCase
@@ -24,12 +25,12 @@ describe('Delete answerComment', () => {
 
     await inMemoryanswerCommentsRepository.create(newanswerComment)
 
-    await sut.execute({
+    const result = await sut.execute({
       authorId: '1',
       answerCommentId: 'answerComment-1'
     })
 
-    expect(inMemoryanswerCommentsRepository.items).toHaveLength(0)
+    expect(result.isSuccess()).toBeTruthy()
   })
 
   it('it should not be able to delete a answerComment from another user', async () => {
@@ -43,14 +44,13 @@ describe('Delete answerComment', () => {
 
     await inMemoryanswerCommentsRepository.create(newAnswerComment)
 
+    const result = await sut.execute({
+      authorId: '1',
+      answerCommentId: 'answerComment-1'
+    })
 
-
-    expect(async () => {
-      return await sut.execute({
-        authorId: '1',
-        answerCommentId: 'answerComment-1'
-      })
-    }).rejects.toBeInstanceOf(Error)
+    expect(result.isFailure()).toBeTruthy()
+    expect(result.value).toBeInstanceOf(NotAllowedError)
   })
 })
 

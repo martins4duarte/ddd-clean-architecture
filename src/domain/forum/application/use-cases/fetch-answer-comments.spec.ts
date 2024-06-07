@@ -1,6 +1,5 @@
 import { InMemoryAnswerCommentsRepository } from 'test/repositories/in-memory-answers-comment-repository'
 import { makeAnswer } from 'test/factories/make-answer'
-import moment from 'moment'
 import { FetchAnswerCommentsUseCase } from './fetch-answer-comments'
 import { makeAnswerComment } from 'test/factories/make-answer-comment'
 import { InMemoryAnswersRepository } from 'test/repositories/in-memory-answers-repository'
@@ -32,13 +31,13 @@ describe('Fetch Recent AnswerComments', () => {
     await inMemoryAnswerCommentsRepository.create(firstAnswerComment)
     await inMemoryAnswerCommentsRepository.create(secondAnswerComment)
 
-    const { answerComments } = await sut.execute({
+    const result = await sut.execute({
       answerId: answer.id.toString(),
       page: 1,
       limit: 2
     })
 
-    expect(answerComments).toEqual([
+    expect(result.value?.answerComments).toEqual([
       expect.objectContaining(firstAnswerComment),
       expect.objectContaining(secondAnswerComment)
     ])
@@ -51,39 +50,39 @@ describe('Fetch Recent AnswerComments', () => {
 
     const firstAnswerComment = makeAnswerComment({
       answerId: answer.id,
-      createdAt: moment.utc().toDate()
+      createdAt: new Date(2024, 0, 1)
     })
     const secondAnswerComment = makeAnswerComment({
       answerId: answer.id,
-      createdAt: moment.utc().add(10).toDate()
+      createdAt: new Date(2024, 0, 4)
     })
     const thirtyAnswerComment = makeAnswerComment({
       answerId: answer.id,
-      createdAt: moment.utc().add(20).toDate()
+      createdAt: new Date(2024, 0, 8)
     })
 
     await inMemoryAnswerCommentsRepository.create(firstAnswerComment)
     await inMemoryAnswerCommentsRepository.create(secondAnswerComment)
     await inMemoryAnswerCommentsRepository.create(thirtyAnswerComment)
 
-    const { answerComments: firstPageAnswerComments } = await sut.execute({
+    const firstResult = await sut.execute({
       answerId: answer.id.toString(),
       page: 1,
       limit: 2
     })
 
-    const { answerComments: secondPageAnswerComments } = await sut.execute({
+    const secondResult = await sut.execute({
       answerId: answer.id.toString(),
       page: 2,
       limit: 2
     })
 
-    expect(firstPageAnswerComments).toEqual([
+    expect(firstResult.value?.answerComments).toEqual([
       expect.objectContaining(thirtyAnswerComment),
       expect.objectContaining(secondAnswerComment)
     ])
 
-    expect(secondPageAnswerComments).toEqual([
+    expect(secondResult.value?.answerComments).toEqual([
       expect.objectContaining(firstAnswerComment)
     ])
 

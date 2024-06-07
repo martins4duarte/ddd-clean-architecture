@@ -1,6 +1,5 @@
 import { InMemoryAnswersRepository } from 'test/repositories/in-memory-answers-repository'
 import { makeQuestion } from 'test/factories/make-question'
-import moment from 'moment'
 import { FetchQuestionAnswersUseCase } from './fetch-question-answers'
 import { makeAnswer } from 'test/factories/make-answer'
 import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
@@ -32,13 +31,13 @@ describe('Fetch Recent Answers', () => {
     await inMemoryAnswersRepository.create(firstAnswer)
     await inMemoryAnswersRepository.create(secondAnswer)
 
-    const { answers } = await sut.execute({
+    const result = await sut.execute({
       questionId: question.id.toString(),
       page: 1,
       limit: 2
     })
 
-    expect(answers).toEqual([
+    expect(result.value?.answers).toEqual([
       expect.objectContaining(firstAnswer),
       expect.objectContaining(secondAnswer)
     ])
@@ -51,39 +50,39 @@ describe('Fetch Recent Answers', () => {
 
     const firstAnswer = makeAnswer({
       questionId: question.id,
-      createdAt: moment.utc().toDate()
+      createdAt: new Date(2024, 0, 1)
     })
     const secondAnswer = makeAnswer({
       questionId: question.id,
-      createdAt: moment.utc().add(10).toDate()
+      createdAt: new Date(2024, 0, 4)
     })
     const thirtyAnswer = makeAnswer({
       questionId: question.id,
-      createdAt: moment.utc().add(20).toDate()
+      createdAt: new Date(2024, 0, 8)
     })
 
     await inMemoryAnswersRepository.create(firstAnswer)
     await inMemoryAnswersRepository.create(secondAnswer)
     await inMemoryAnswersRepository.create(thirtyAnswer)
 
-    const { answers: firstPageAnswers } = await sut.execute({
+    const firstResult = await sut.execute({
       questionId: question.id.toString(),
       page: 1,
       limit: 2
     })
 
-    const { answers: secondPageAnswers } = await sut.execute({
+    const secondResult = await sut.execute({
       questionId: question.id.toString(),
       page: 2,
       limit: 2
     })
 
-    expect(firstPageAnswers).toEqual([
+    expect(firstResult.value?.answers).toEqual([
       expect.objectContaining(thirtyAnswer),
       expect.objectContaining(secondAnswer)
     ])
 
-    expect(secondPageAnswers).toEqual([
+    expect(secondResult.value?.answers).toEqual([
       expect.objectContaining(firstAnswer)
     ])
 

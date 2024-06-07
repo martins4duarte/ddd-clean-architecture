@@ -19,16 +19,16 @@ describe('Comment Answer', () => {
     const answer = makeAnswer()
     await inMemoryAnswersRepository.create(answer)
 
-    const { commentAnswer } = await sut.execute({
+    const result = await sut.execute({
       authorId: answer.authorId.toString(),
       answerId: answer.id.toString(),
       content: 'New answer comment!'
     })
-  
-    expect(commentAnswer).toMatchObject({
+
+    expect(result.isSuccess()).toBeTruthy()
+    expect(inMemoryAnswerCommentsRepository.items[0]).toMatchObject({
       content: 'New answer comment!',
     })
-    expect(inMemoryAnswerCommentsRepository.items[0].id).toEqual(commentAnswer.id)
   })
 
 })

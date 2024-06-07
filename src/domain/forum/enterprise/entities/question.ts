@@ -17,7 +17,7 @@ export interface QuestionProps {
 export class Question extends Entity<QuestionProps> {
 
   private touch() {
-    this.props.updatedAt = moment.utc().toDate()
+    this.props.updatedAt = new Date()
   }
   
   get authorId() {
@@ -61,7 +61,7 @@ export class Question extends Entity<QuestionProps> {
   }
 
   get isNew(): boolean {
-    return moment.utc().diff(this.props.createdAt) <= 3
+    return moment().diff(this.props.createdAt) <= 3
   }
 
   get excerpt() {

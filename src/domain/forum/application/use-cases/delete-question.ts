@@ -1,4 +1,7 @@
+import { Either, failure, success } from "@/core/either"
 import { QuestionsRepository } from "../repositories/questions-repository"
+import { NotAllowedError } from "./errors/not-allowed"
+import { ResourceNotFoundError } from "./errors/resource-not-found-error"
 
 
 interface DeleteQuestionUseCaseRequest {
@@ -6,7 +9,10 @@ interface DeleteQuestionUseCaseRequest {
   questionId: string
 }
 
-interface DeleteQuestionUseCaseResponse { }
+type DeleteQuestionUseCaseResponse = Either<
+  ResourceNotFoundError | NotAllowedError,
+  {}
+>
 
 export class DeleteQuestionUseCase {
 
@@ -20,15 +26,15 @@ export class DeleteQuestionUseCase {
     const question = await this.questionRepository.findById(questionId)
 
     if(!question) {
-      throw new Error("Question not found")
+      return failure(new ResourceNotFoundError())
     }
 
     if(authorId !== question.authorId.toString()) {
-      throw new Error("You can't delete a question that is not yours")
+      return failure(new NotAllowedError())
     }
 
     await this.questionRepository.delete(question)
 
-    return {}
+    return success({})
   }
 }
