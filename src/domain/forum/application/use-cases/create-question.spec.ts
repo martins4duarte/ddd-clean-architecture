@@ -24,8 +24,8 @@ describe('Create Question', () => {
   
     expect(result.isSuccess()).toBeTruthy()
     expect(item).toEqual(result.value?.question)
-    expect(item.attachments).toHaveLength(2)
-    expect(item.attachments).toEqual([
+    expect(item.attachments.currentItems).toHaveLength(2)
+    expect(item.attachments.currentItems).toEqual([
       expect.objectContaining({ attachmentId: new UniqueEntityID('1') }),
       expect.objectContaining({ attachmentId: new UniqueEntityID('2') }),
     ])

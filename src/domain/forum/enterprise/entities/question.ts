@@ -5,6 +5,7 @@ import { UniqueEntityID } from "@/core/entities/unique-entity-id"
 import { Optional } from "@/core/types/optional"
 import moment from "moment"
 import { QuestionAttachment } from "./question-attachment"
+import { QuestionAttachmentList } from "./question-attachment-list"
 
 export interface QuestionProps {
   authorId: UniqueEntityID
@@ -12,7 +13,7 @@ export interface QuestionProps {
   title: string
   content: string
   slug: Slug
-  attachments: QuestionAttachment[]
+  attachments: QuestionAttachmentList
   createdAt: Date
   updatedAt?: Date
 }
@@ -59,7 +60,7 @@ export class Question extends AggregateRoot<QuestionProps> {
     return this.props.attachments
   }
 
-  set attachments(attachments: QuestionAttachment[]) {
+  set attachments(attachments: QuestionAttachmentList) {
     this.props.attachments = attachments
   }
 
@@ -95,7 +96,7 @@ export class Question extends AggregateRoot<QuestionProps> {
     const question = new Question({
       ...props,
       slug: props.slug ?? Slug.createFromText(props.title),
-      attachments: props.attachments ?? [],
+      attachments: props.attachments ?? new QuestionAttachmentList(),
       createdAt: props.createdAt ?? new Date(),
     }, id)
 
