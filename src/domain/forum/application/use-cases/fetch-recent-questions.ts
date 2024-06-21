@@ -1,7 +1,7 @@
 import { QuestionsRepository } from "../repositories/questions-repository"
 import { Question } from "../../enterprise/entities/question"
 import { PaginationParams } from "@/core/repositories/pagination-params"
-import { ResourceNotFoundError } from "./errors/resource-not-found-error"
+import { ResourceNotFoundError } from "@/core/errors/errors/resource-not-found-error"
 import { Either, failure, success } from "@/core/either"
 
 
