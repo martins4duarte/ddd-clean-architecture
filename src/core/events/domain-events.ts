@@ -6,9 +6,9 @@ type DomainEventCallback<T> = (event: T) => void //eslint-disable-line
 
 export class DomainEvents {
   private static handlersMap: Record<string, DomainEventCallback<any>[]> = {} //eslint-disable-line
-  private static markedAggregates: AggregateRoot<unknown>[] = []
+  private static markedAggregates: AggregateRoot<any>[] = [] //eslint-disable-line
 
-  public static markAggregateForDispatch(aggregate: AggregateRoot<unknown>) {
+  public static markAggregateForDispatch(aggregate: AggregateRoot<any>) { //eslint-disable-line
     const aggregateFound = !!this.findMarkedAggregateByID(aggregate.id)
 
     if (!aggregateFound) {
@@ -16,12 +16,12 @@ export class DomainEvents {
     }
   }
 
-  private static dispatchAggregateEvents(aggregate: AggregateRoot<unknown>) {
+  private static dispatchAggregateEvents(aggregate: AggregateRoot<any>) { //eslint-disable-line
     aggregate.domainEvents.forEach((event: DomainEvent) => this.dispatch(event))
   }
 
   private static removeAggregateFromMarkedDispatchList(
-    aggregate: AggregateRoot<unknown>,
+    aggregate: AggregateRoot<any>, //eslint-disable-line
   ) {
     const index = this.markedAggregates.findIndex((a) => a.equals(aggregate))
 
@@ -30,7 +30,7 @@ export class DomainEvents {
 
   private static findMarkedAggregateByID(
     id: UniqueEntityID,
-  ): AggregateRoot<unknown> | undefined {
+  ): AggregateRoot<any> | undefined { //eslint-disable-line
     return this.markedAggregates.find((aggregate) => aggregate.id.equals(id))
   }
 

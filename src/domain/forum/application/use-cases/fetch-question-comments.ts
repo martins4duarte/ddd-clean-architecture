@@ -1,5 +1,4 @@
 import { QuestionCommentsRepository } from "../repositories/question-comments-repository"
-import { Answer } from "../../enterprise/entities/answer"
 import { PaginationParams } from "@/core/repositories/pagination-params"
 import { QuestionComment } from "../../enterprise/entities/question-comment"
 import { Either, success } from "@/core/either"
