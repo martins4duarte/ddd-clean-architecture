@@ -5,25 +5,25 @@ import { InMemoryAnswerCommentsRepository } from 'test/repositories/in-memory-an
 import { makeAnswerComment } from 'test/factories/make-answer-comment'
 import { NotAllowedError } from '@/core/errors/errors/not-allowed'
 
-let inMemoryanswerCommentsRepository: InMemoryAnswerCommentsRepository
+let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
 let sut: DeleteAnswerCommentUseCase
 
 describe('Delete answerComment', () => {
   beforeEach(() => {
-    inMemoryanswerCommentsRepository = new InMemoryAnswerCommentsRepository()
-    sut = new DeleteAnswerCommentUseCase(inMemoryanswerCommentsRepository)
+    inMemoryAnswerCommentsRepository = new InMemoryAnswerCommentsRepository()
+    sut = new DeleteAnswerCommentUseCase(inMemoryAnswerCommentsRepository)
   })
 
   it('it should be able to delete a answerComment', async () => {
 
-    const newanswerComment = makeAnswerComment(
+    const newAnswerComment = makeAnswerComment(
       {
         authorId: new UniqueEntityID('1')
       },
       new UniqueEntityID('answerComment-1')
     )
 
-    await inMemoryanswerCommentsRepository.create(newanswerComment)
+    await inMemoryAnswerCommentsRepository.create(newAnswerComment)
 
     const result = await sut.execute({
       authorId: '1',
@@ -42,7 +42,7 @@ describe('Delete answerComment', () => {
       new UniqueEntityID('answerComment-1')
     )
 
-    await inMemoryanswerCommentsRepository.create(newAnswerComment)
+    await inMemoryAnswerCommentsRepository.create(newAnswerComment)
 
     const result = await sut.execute({
       authorId: '1',
