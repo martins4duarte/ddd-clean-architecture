@@ -1,8 +1,6 @@
-import { UniqueEntityID } from '@/core/entities/unique-entity-id'
-import { InMemoryQuestionCommentsRepository } from 'test/repositories/in-memory-question-comment-repository'
-import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
+import { InMemoryQuestionCommentsRepository } from 'test/repositories/in-memory-questions-comment-repository'
+import type { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
 import { CommentOnQuestionUseCase } from './comment-on-question'
-import { makeQuestionComment } from 'test/factories/make-question-comment'
 import { makeQuestion } from 'test/factories/make-question'
 
 let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
@@ -12,7 +10,6 @@ let sut: CommentOnQuestionUseCase
 describe('Comment Question', () => {
   beforeEach(() => {
     inMemoryQuestionCommentsRepository = new InMemoryQuestionCommentsRepository()
-    inMemoryQuestionsRepository = new InMemoryQuestionsRepository()
     sut = new CommentOnQuestionUseCase(inMemoryQuestionsRepository, inMemoryQuestionCommentsRepository)
   })
 

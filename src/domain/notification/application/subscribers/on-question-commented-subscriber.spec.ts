@@ -1,23 +1,18 @@
-import { makeAnswer } from "test/factories/make-answer"
-import { InMemoryAnswersRepository } from "test/repositories/in-memory-answers-repository"
-import { InMemoryAnswerAttachmentsRepository } from "test/repositories/in-memory-answer-attachments-repository"
+import { makeQuestion } from "test/factories/make-question"
 import { InMemoryQuestionsRepository } from "test/repositories/in-memory-questions-repository"
 import { InMemoryQuestionAttachmentsRepository } from "test/repositories/in-memory-question-attachments-repository"
 import { SendNotificationUseCase, type SendNotificationUseCaseRequest, type SendNotificationUseCaseResponse } from "../use-cases/send-notification"
 import { InMemoryNotificationsRepository } from "test/repositories/in-memory-notifications-repository"
-import { makeAnswerComment } from "test/factories/make-answer-comment"
+import { makeQuestionComment } from "test/factories/make-question-comment"
 import type { MockInstance } from "vitest"
 import { waitFor } from "test/utils/wait-for"
-import { makeQuestion } from "test/factories/make-question"
-import { InMemoryAnswerCommentsRepository } from "test/repositories/in-memory-answers-comment-repository"
-import { OnAnswerCommentedSubscriber } from "./on-answer-commented-subscriber"
+import { InMemoryQuestionCommentsRepository } from "test/repositories/in-memory-questions-comment-repository"
+import { OnQuestionCommentedSubscriber } from "./on-question-commented-subscriber"
 
 let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
-let inMemoryAnswersRepository: InMemoryAnswersRepository
-let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
 let inMemoryNotificationsRepository: InMemoryNotificationsRepository
-let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
+let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
 let sendNotificationUseCase: SendNotificationUseCase
 
 let sendNotificationSpy: MockInstance<
@@ -25,44 +20,40 @@ let sendNotificationSpy: MockInstance<
   Promise<SendNotificationUseCaseResponse>
 >
 
-describe('on answer commented', () => {
+describe('on question commented', () => {
   beforeEach(() => {
     inMemoryQuestionAttachmentsRepository =
       new InMemoryQuestionAttachmentsRepository()
     inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
       inMemoryQuestionAttachmentsRepository,
     )
-    inMemoryAnswerAttachmentsRepository =
-      new InMemoryAnswerAttachmentsRepository()
-    inMemoryAnswersRepository = new InMemoryAnswersRepository(
-      inMemoryAnswerAttachmentsRepository,
+    inMemoryQuestionAttachmentsRepository =
+      new InMemoryQuestionAttachmentsRepository()
+    inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
+      inMemoryQuestionAttachmentsRepository,
     )
     inMemoryNotificationsRepository =
       new InMemoryNotificationsRepository()
-    inMemoryAnswerCommentsRepository =
-      new InMemoryAnswerCommentsRepository()
+    inMemoryQuestionCommentsRepository =
+      new InMemoryQuestionCommentsRepository()
     sendNotificationUseCase = new SendNotificationUseCase(
       inMemoryNotificationsRepository
     )
 
     sendNotificationSpy = vi.spyOn(sendNotificationUseCase, 'execute')
 
-    new OnAnswerCommentedSubscriber(inMemoryAnswersRepository, sendNotificationUseCase)
+    new OnQuestionCommentedSubscriber(inMemoryQuestionsRepository, sendNotificationUseCase)
   })
 
-  it('should be able to send a notification when an answer is commented', async () => {
+  it('should be able to send a notification when an question is commented', async () => {
     const question = makeQuestion();
-    const answer = makeAnswer({
-      questionId: question.id
-    });
-    const answerComment = makeAnswerComment({
-      answerId: answer.id,
+    const questionComment = makeQuestionComment({
+      questionId: question.id,
       content: "Comment test"
     })
 
     await inMemoryQuestionsRepository.create(question)
-    await inMemoryAnswersRepository.create(answer)
-    await inMemoryAnswerCommentsRepository.create(answerComment)
+    await inMemoryQuestionCommentsRepository.create(questionComment)
 
     await waitFor(() => {
       expect(sendNotificationSpy).toHaveBeenCalled()

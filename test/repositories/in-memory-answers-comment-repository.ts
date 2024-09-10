@@ -1,7 +1,7 @@
 import { DomainEvents } from "@/core/events/domain-events";
-import { PaginationParams } from "@/core/repositories/pagination-params";
-import { AnswerCommentsRepository } from "@/domain/forum/application/repositories/answer-comments-repository";
-import { AnswerComment } from "@/domain/forum/enterprise/entities/answer-comment";
+import type { PaginationParams } from "@/core/repositories/pagination-params";
+import type { AnswerCommentsRepository } from "@/domain/forum/application/repositories/answer-comments-repository";
+import type { AnswerComment } from "@/domain/forum/enterprise/entities/answer-comment";
 
 export class InMemoryAnswerCommentsRepository implements AnswerCommentsRepository {
 
@@ -33,26 +33,26 @@ export class InMemoryAnswerCommentsRepository implements AnswerCommentsRepositor
     return answers
   }
 
-  async create(AnswerComment: AnswerComment) {
-    this.items.push(AnswerComment);
+  async create(answerComment: AnswerComment) {
+    this.items.push(answerComment);
 
-    DomainEvents.dispatchEventsForAggregate(AnswerComment.id)
+    DomainEvents.dispatchEventsForAggregate(answerComment.id)
   }
 
-  async save(AnswerComment: AnswerComment): Promise<void> {
-    const AnswerCommentIndex = this.items.findIndex(item => item.id === AnswerComment.id)
-    this.items[AnswerCommentIndex] = AnswerComment
+  async save(answerComment: AnswerComment): Promise<void> {
+    const answerCommentIndex = this.items.findIndex(item => item.id === answerComment.id)
+    this.items[answerCommentIndex] = answerComment
 
-    DomainEvents.dispatchEventsForAggregate(AnswerComment.id)
+    DomainEvents.dispatchEventsForAggregate(answerComment.id)
   }
 
-  async delete(AnswerComment: AnswerComment) {
-    const AnswerCommentExists = this.items.findIndex(item => item.id === AnswerComment.id)
+  async delete(answerComment: AnswerComment) {
+    const answerCommentExists = this.items.findIndex(item => item.id === answerComment.id)
 
-    if (!AnswerComment) {
+    if (!answerComment) {
       throw new Error('AnswerComment not found')
     }
 
-    this.items.splice(AnswerCommentExists, 1)
+    this.items.splice(answerCommentExists, 1)
   }
 }

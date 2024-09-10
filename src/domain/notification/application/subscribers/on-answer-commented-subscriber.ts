@@ -1,7 +1,7 @@
 import { DomainEvents } from "@/core/events/domain-events";
-import { EventHandler } from "@/core/events/event-handler";
-import { SendNotificationUseCase } from "../use-cases/send-notification";
-import { AnswersRepository } from "@/domain/forum/application/repositories/answers-repository";
+import type { EventHandler } from "@/core/events/event-handler";
+import type { SendNotificationUseCase } from "../use-cases/send-notification";
+import type { AnswersRepository } from "@/domain/forum/application/repositories/answers-repository";
 import { AnswerCommentedEvent } from "@/domain/forum/enterprise/events/answer-commented-event";
 
 export class OnAnswerCommentedSubscriber implements EventHandler {
@@ -28,7 +28,7 @@ export class OnAnswerCommentedSubscriber implements EventHandler {
       await this.sendNotification.execute({
         recipientId: answer.authorId.toString(),
         content: answerComment.content,
-        title: `Your answer has a new comment!`,
+        title: 'Your answer has a new comment!',
       })
     }
 
