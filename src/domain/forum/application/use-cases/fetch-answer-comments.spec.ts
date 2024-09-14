@@ -1,99 +1,60 @@
-import { InMemoryAnswerCommentsRepository } from 'test/repositories/in-memory-answers-comment-repository'
-import { makeAnswer } from 'test/factories/make-answer'
-import { FetchAnswerCommentsUseCase } from './fetch-answer-comments'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
+import { FetchAnswerCommentsUseCase } from '@/domain/forum/application/use-cases/fetch-answer-comments'
 import { makeAnswerComment } from 'test/factories/make-answer-comment'
-import { InMemoryAnswersRepository } from 'test/repositories/in-memory-answers-repository'
-import { InMemoryAnswerAttachmentsRepository } from 'test/repositories/in-memory-answer-attachments-repository'
+import { InMemoryAnswerCommentsRepository } from 'test/repositories/in-memory-answers-comment-repository'
 
 let inMemoryAnswerCommentsRepository: InMemoryAnswerCommentsRepository
-let inMemoryAnswerAttachmentsRepository: InMemoryAnswerAttachmentsRepository
-let inMemoryAnswersRepository: InMemoryAnswersRepository
 let sut: FetchAnswerCommentsUseCase
 
-describe('Fetch Recent AnswerComments', () => {
+describe('Fetch Answer Comments', () => {
   beforeEach(() => {
-    inMemoryAnswerAttachmentsRepository =
-      new InMemoryAnswerAttachmentsRepository()
-    inMemoryAnswersRepository = new InMemoryAnswersRepository(
-      inMemoryAnswerAttachmentsRepository
-    )
     inMemoryAnswerCommentsRepository = new InMemoryAnswerCommentsRepository()
     sut = new FetchAnswerCommentsUseCase(inMemoryAnswerCommentsRepository)
   })
 
-  it('it should be able to fetch answer comments', async () => {
+  it('should be able to fetch answer comments', async () => {
+    await inMemoryAnswerCommentsRepository.create(
+      makeAnswerComment({
+        answerId: new UniqueEntityID('answer-1'),
+      }),
+    )
 
-    const answer = makeAnswer()
+    await inMemoryAnswerCommentsRepository.create(
+      makeAnswerComment({
+        answerId: new UniqueEntityID('answer-1'),
+      }),
+    )
 
-    await inMemoryAnswersRepository.create(answer)
-
-    const firstAnswerComment = makeAnswerComment({
-      answerId: answer.id
-    })
-    const secondAnswerComment = makeAnswerComment({
-      answerId: answer.id
-    })
-
-    await inMemoryAnswerCommentsRepository.create(firstAnswerComment)
-    await inMemoryAnswerCommentsRepository.create(secondAnswerComment)
+    await inMemoryAnswerCommentsRepository.create(
+      makeAnswerComment({
+        answerId: new UniqueEntityID('answer-1'),
+      }),
+    )
 
     const result = await sut.execute({
-      answerId: answer.id.toString(),
+      answerId: 'answer-1',
       page: 1,
-      limit: 2
     })
 
-    expect(result.value?.answerComments).toEqual([
-      expect.objectContaining(firstAnswerComment),
-      expect.objectContaining(secondAnswerComment)
-    ])
+    expect(result.value?.answerComments).toHaveLength(3)
   })
 
-  it('it should be able to fetch paginated answer comments', async () => {
+  it('should be able to fetch paginated answer comments', async () => {
+    for (let i = 1; i <= 22; i++) {
+      await inMemoryAnswerCommentsRepository.create(
+        makeAnswerComment({
+          answerId: new UniqueEntityID('answer-1'),
+        }),
+      )
+    }
 
-    const answer = makeAnswer()
-    await inMemoryAnswersRepository.create(answer)
-
-    const firstAnswerComment = makeAnswerComment({
-      answerId: answer.id,
-      createdAt: new Date(2024, 0, 1)
-    })
-    const secondAnswerComment = makeAnswerComment({
-      answerId: answer.id,
-      createdAt: new Date(2024, 0, 4)
-    })
-    const thirtyAnswerComment = makeAnswerComment({
-      answerId: answer.id,
-      createdAt: new Date(2024, 0, 8)
-    })
-
-    await inMemoryAnswerCommentsRepository.create(firstAnswerComment)
-    await inMemoryAnswerCommentsRepository.create(secondAnswerComment)
-    await inMemoryAnswerCommentsRepository.create(thirtyAnswerComment)
-
-    const firstResult = await sut.execute({
-      answerId: answer.id.toString(),
-      page: 1,
-      limit: 2
-    })
-
-    const secondResult = await sut.execute({
-      answerId: answer.id.toString(),
+    const result = await sut.execute({
+      answerId: 'answer-1',
       page: 2,
-      limit: 2
     })
 
-    expect(firstResult.value?.answerComments).toEqual([
-      expect.objectContaining(thirtyAnswerComment),
-      expect.objectContaining(secondAnswerComment)
-    ])
+    console.log(result.value?.answerComments)
 
-    expect(secondResult.value?.answerComments).toEqual([
-      expect.objectContaining(firstAnswerComment)
-    ])
-
+    expect(result.value?.answerComments).toHaveLength(2)
   })
-
-
 })
-

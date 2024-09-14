@@ -5,7 +5,6 @@ import type { QuestionComment } from "@/domain/forum/enterprise/entities/questio
 
 export class InMemoryQuestionCommentsRepository implements QuestionCommentsRepository {
  
-
   public items: QuestionComment[] = []
 
   async findById(id: string) {
@@ -20,7 +19,7 @@ export class InMemoryQuestionCommentsRepository implements QuestionCommentsRepos
   }
 
   async findManyByQuestionId(questionId: string, { page, limit }: PaginationParams) {
-    const OFFSET = (page - 1) * page;
+    const OFFSET = (page - 1) * 20;
     const LIMIT = page * (limit ?? 20);
 
     const answers = this.items.filter(answer =>

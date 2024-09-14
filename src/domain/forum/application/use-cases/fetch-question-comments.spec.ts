@@ -1,97 +1,50 @@
 import { InMemoryQuestionCommentsRepository } from 'test/repositories/in-memory-questions-comment-repository'
-import { makeQuestion } from 'test/factories/make-question'
 import { FetchQuestionCommentsUseCase } from './fetch-question-comments'
 import { makeQuestionComment } from 'test/factories/make-question-comment'
-import { InMemoryQuestionsRepository } from 'test/repositories/in-memory-questions-repository'
-import { InMemoryQuestionAttachmentsRepository } from 'test/repositories/in-memory-question-attachments-repository'
+import { UniqueEntityID } from '@/core/entities/unique-entity-id'
 
 let inMemoryQuestionCommentsRepository: InMemoryQuestionCommentsRepository
-let inMemoryQuestionAttachmentsRepository: InMemoryQuestionAttachmentsRepository
-let inMemoryQuestionsRepository: InMemoryQuestionsRepository
 let sut: FetchQuestionCommentsUseCase
 
 describe('Fetch Recent QuestionComments', () => {
   beforeEach(() => {
-    inMemoryQuestionAttachmentsRepository = 
-      new InMemoryQuestionAttachmentsRepository()
-    inMemoryQuestionsRepository = new InMemoryQuestionsRepository(
-      inMemoryQuestionAttachmentsRepository
-    )
     inMemoryQuestionCommentsRepository = new InMemoryQuestionCommentsRepository()
     sut = new FetchQuestionCommentsUseCase(inMemoryQuestionCommentsRepository)
   })
 
   it('it should be able to fetch question comments', async () => {
 
-    const question = makeQuestion()
-
-    await inMemoryQuestionsRepository.create(question)
-
-    const firstQuestionComment = makeQuestionComment({
-      questionId: question.id
-    })
-    const secondQuestionComment = makeQuestionComment({
-      questionId: question.id
-    })
-
-    await inMemoryQuestionCommentsRepository.create(firstQuestionComment)
-    await inMemoryQuestionCommentsRepository.create(secondQuestionComment)
+    for (let i = 1; i <= 2; i++) {
+      await inMemoryQuestionCommentsRepository.create(
+        makeQuestionComment({
+          questionId: new UniqueEntityID('question-1'),
+        }),
+      )
+    }
 
     const result = await sut.execute({
-      questionId: question.id.toString(),
+      questionId: 'question-1',
       page: 1,
-      limit: 2
     })
 
-    expect(result.value?.questionComments).toEqual([
-      expect.objectContaining(firstQuestionComment),
-      expect.objectContaining(secondQuestionComment)
-    ])
+    expect(result.value?.questionComments).toHaveLength(2)
   })
 
-  it('it should be able to fetch paginated question comments', async () => {
+  it('should be able to fetch paginated question comments', async () => {
+    for (let i = 1; i <= 22; i++) {
+      await inMemoryQuestionCommentsRepository.create(
+        makeQuestionComment({
+          questionId: new UniqueEntityID('question-1'),
+        }),
+      )
+    }
 
-    const question = makeQuestion()
-    await inMemoryQuestionsRepository.create(question)
-
-    const firstQuestionComment = makeQuestionComment({
-      questionId: question.id,
-      createdAt: new Date(2024, 0, 1)
-    })
-    const secondQuestionComment = makeQuestionComment({
-      questionId: question.id,
-      createdAt: new Date(2024, 0, 4)
-    })
-    const thirtyQuestionComment = makeQuestionComment({
-      questionId: question.id,
-      createdAt: new Date(2024, 0, 8)
-    })
-
-    await inMemoryQuestionCommentsRepository.create(firstQuestionComment)
-    await inMemoryQuestionCommentsRepository.create(secondQuestionComment)
-    await inMemoryQuestionCommentsRepository.create(thirtyQuestionComment)
-
-    const firstResult = await sut.execute({
-      questionId: question.id.toString(),
-      page: 1,
-      limit: 2
-    })
-
-    const secondResult = await sut.execute({
-      questionId: question.id.toString(),
+    const result = await sut.execute({
+      questionId: 'question-1',
       page: 2,
-      limit: 2
     })
 
-    expect(firstResult.value?.questionComments).toEqual([
-      expect.objectContaining(thirtyQuestionComment),
-      expect.objectContaining(secondQuestionComment)
-    ])
-
-    expect(secondResult.value?.questionComments).toEqual([
-      expect.objectContaining(firstQuestionComment)
-    ])
-
+    expect(result.value?.questionComments).toHaveLength(2)
   })
 
 

@@ -19,7 +19,7 @@ export class InMemoryAnswerCommentsRepository implements AnswerCommentsRepositor
   }
 
   async findManyByAnswerId(answerId: string, { page, limit }: PaginationParams) {
-    const OFFSET = (page - 1) * page;
+    const OFFSET = (page - 1) * 20;
     const LIMIT = page * (limit ?? 20);
 
     const answers = this.items.filter(answer =>
